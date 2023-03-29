@@ -3,11 +3,27 @@
 namespace Amasty\UserName\Controller\Index;
 
 use Magento\Framework\App\ActionInterface;
+use Magento\Framework\Controller\ResultFactory;
 
 class Index implements ActionInterface
 {
-    public function execute() {
-        echo 'Привет Magento. Привет Amasty. Я готов тебя покорить!';
-        die;
+
+    /**
+     * @var ResultFactory
+     */
+
+    private $resultFactory;
+
+    public function __construct(
+        ResultFactory $resultFactory
+    ) {
+        $this->resultFactory = $resultFactory;
+    }
+
+
+    public function execute()
+    {
+        return $this->resultFactory->create(ResultFactory::TYPE_PAGE);
+
     }
 }
