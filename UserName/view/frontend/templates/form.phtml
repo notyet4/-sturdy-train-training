@@ -1,0 +1,18 @@
+<?php
+/**
+ * @var \Amasty\Username\Block\Form $block
+ */
+?>
+
+<form method="post">
+    <div>
+        <label for="sku">sku:</label>
+        <input type="text" name="sku">
+    </div>
+    <div>
+        <label>qty:</label>
+        <input type="number" name="qty">
+    </div>
+    <?= $block->getChildHtml("Amasty_USERNAME.timer")  ?>
+    <button type="submit">Отправить</button>
+</form>
