@@ -4,7 +4,7 @@
  */
 ?>
 
-<form method="post">
+<form method="post" action="USERNAME/Username/Username" data-mage-init='{"validation":{"rules": {"sku": {"required":true}}}}'>
     <div>
         <label for="sku">sku:</label>
         <input type="text" name="sku">
@@ -12,7 +12,7 @@
     <?php if ($block->showQty()): ?>
     <div>
         <label>qty:</label>
-        <input type="number" name="qty" value="<?= $block->getQty() ?>">
+        <input type="number" name="qty" value="<?= $block->getQty() ?>" data-validate='{"required":true, "min":1}'>
     </div>
     <?php endif; ?>
     <?= $block->getChildHtml("Amasty_USERNAME.timer")  ?>

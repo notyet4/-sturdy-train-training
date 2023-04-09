@@ -7,7 +7,7 @@
                 <enabled>1</enabled>
                 <welcome_text>Hello</welcome_text>
                 <qty>1</qty>
-                <qty_value>321</qty_value>
+                <!--<qty_value>321</qty_value>-->
             </general>
         </test_config>
     </default>

@@ -26,9 +26,9 @@ class Form extends Template
         return $this->scopeConfig->isSetFlag('test_config/general/qty') ?: '';
     }
 
-    public function getQty(): int
+    /*public function getQty(): int
     {
         return $this->scopeConfig->getValue('test_config/general/qty_value') ?: '' ;
-    }
+    }*/
 
 }

@@ -31,7 +31,7 @@
                 </field>
                 <field id="qty_value" type="textarea" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Qty value</label>
-                    <validate>integer</validate>
+                    <!--<validate>integer</validate>-->
                     <depends>
                         <field id="qty">1</field>
                         <field id="enabled">1</field>
