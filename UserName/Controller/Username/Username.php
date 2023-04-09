@@ -83,7 +83,7 @@ class Username implements ActionInterface
 
             $quote->addProduct($product,$qty);
             $quote->save();
-          die('product added to cart');
+            die('product added to cart');
 
         }catch (\Exception $e){
             echo $e->getMessage();
