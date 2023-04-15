@@ -7,6 +7,7 @@ use Magento\Checkout\Model\Session;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku;
+use \Magento\Framework\Controller\Result\RedirectFactory;
 
 
 class Username implements ActionInterface
@@ -32,18 +33,25 @@ class Username implements ActionInterface
      */
     private $getSalableQuantityDataBySku;
 
+    /**
+     * @var RedirectFactory
+     */
+    private $resultRedirectFactory;
+
 
     public function __construct(
         Session $checkoutSession,
         ProductRepositoryInterface $productRepository,
         RequestInterface $request,
         GetSalableQuantityDataBySku $getSalableQuantityDataBySku,
+        RedirectFactory $resultRedirectFactory
 
     ) {
         $this->checkoutSession = $checkoutSession;
         $this->productRepository = $productRepository;
         $this->request = $request;
         $this->getSalableQuantityDataBySku = $getSalableQuantityDataBySku;
+        $this->resultRedirectFactory = $resultRedirectFactory;
     }
 
 
@@ -51,7 +59,6 @@ class Username implements ActionInterface
     {
         $sku = $this->request->getParam('sku');
         $qty = $this->request->getParam('qty');
-
 
         $quote = $this->checkoutSession->getQuote();
 
@@ -83,7 +90,9 @@ class Username implements ActionInterface
 
             $quote->addProduct($product,$qty);
             $quote->save();
-          die('product added to cart');
+            //die('product added to cart');
+            $resultRedirect = $this->resultRedirectFactory->create();
+            return $resultRedirect->setPath('http://localhost/USERNAME');
 
         }catch (\Exception $e){
             echo $e->getMessage();

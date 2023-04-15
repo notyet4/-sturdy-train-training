@@ -1,0 +1,12 @@
+<div>
+    <label>sku:</label>
+    <input type="text" name="sku" id="sku" data-bind="textInput: searchText"/>
+    <div class="test-autocomplete-list">
+        <ul data-bind="foreach: searchResult">
+            <li class="find" >
+                <div data-bind="text: sku" id="divforsku"></div>
+                <div data-bind="text: name" id="divforname"></div>
+            </li>
+        </ul>
+    </div>
+</div>
