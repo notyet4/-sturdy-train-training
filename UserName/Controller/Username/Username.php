@@ -92,7 +92,7 @@ class Username implements ActionInterface
             $quote->save();
             //die('product added to cart');
             $resultRedirect = $this->resultRedirectFactory->create();
-            return $resultRedirect->setPath('http://localhost/USERNAME');
+            return $resultRedirect->setPath('*/');
 
         }catch (\Exception $e){
             echo $e->getMessage();
