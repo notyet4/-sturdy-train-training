@@ -3,7 +3,7 @@
  * @var Amasty\Username\Block\Form $block
  */
 ?>
-<form method="post" action="USERNAME/Username/Username" data-mage-init='{"validation":{"rules": {"sku": {"required":true}}}}'>
+<form method="post" action="<?= $block->getFormAction() ?>" data-mage-init='{"validation":{"rules": {"sku": {"required":true}}}}'>
     <div data-bind="scope: 'coolAutocomplete'">
         <!-- ko template: getTemplate() --><!-- /ko -->
     </div>
