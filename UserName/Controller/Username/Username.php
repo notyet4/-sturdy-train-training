@@ -3,15 +3,26 @@
 namespace Amasty\UserName\Controller\Username;
 
 use Magento\Framework\App\ActionInterface;
+use \Magento\Framework\Message\ManagerInterface;
 use Magento\Checkout\Model\Session;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku;
 use \Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Event\ManagerInterface as EventManager;
+use Amasty\UserName\Model\BlacklistFactory;
+use Amasty\UserName\Model\ResourceModel\Blacklist;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Amasty\UserName\Model\ResourceModel\Blacklist\CollectionFactory as BlacklistCollectionFactory;
+
+
 
 class Username implements ActionInterface
 {
+
+
+
+
     /**
      * @var Session
      */
@@ -45,13 +56,46 @@ class Username implements ActionInterface
     private $eventManager;
 
 
+    /**
+     * @var BlacklistFactory
+     */
+    private $blacklistFactory;
+
+
+    /**
+     * @var Blacklist
+     */
+    private $blacklistResource;
+
+
+    /**
+     * @var CollectionFactory
+     */
+    private $collectionFactory;
+
+
+    /**
+     * @var BlacklistCollectionFactory
+     */
+    private $blacklistCollectionFactory;
+
+    /**
+     * @var ManagerInterface
+     */
+    private $messageManager;
+
     public function __construct(
         Session $checkoutSession,
         ProductRepositoryInterface $productRepository,
         RequestInterface $request,
         GetSalableQuantityDataBySku $getSalableQuantityDataBySku,
         RedirectFactory $resultRedirectFactory,
-        EventManager $eventManager
+        EventManager $eventManager,
+        BlacklistFactory $blacklistFactory,
+        Blacklist $blacklistResource,
+        CollectionFactory $collectionFactory,
+        BlacklistCollectionFactory $blacklistCollectionFactory,
+        ManagerInterface $messageManager
 
     ) {
         $this->checkoutSession = $checkoutSession;
@@ -60,11 +104,44 @@ class Username implements ActionInterface
         $this->getSalableQuantityDataBySku = $getSalableQuantityDataBySku;
         $this->resultRedirectFactory = $resultRedirectFactory;
         $this->eventManager = $eventManager;
+        $this->blacklistFactory = $blacklistFactory;
+        $this->blacklistResource = $blacklistResource;
+        $this->collectionFactory = $collectionFactory;
+        $this->blacklistCollectionFactory = $blacklistCollectionFactory;
+        $this->messageManager = $messageManager;
+    }
+
+
+//    public function addSkuInBlacklist($sku)
+//    {
+//        $blacklist = $this->blacklistFactory->create();
+//        $blacklist->setSku($sku);
+//        $blacklist->setQty(5);
+//        $this->blacklistResource->save($blacklist);
+//
+//    }
+
+
+
+    public function checkQtyQuote($sku){
+        $cartQty = $this->checkoutSession->getQuote()->getAllItems();
+        foreach ($cartQty as $item) {
+            if ($sku == $item->getSku()) {
+
+              return $item->getQty();
+
+            }else{
+                return 0;
+            }
+        }
+
     }
 
 
     public function execute()
     {
+
+
         $sku = $this->request->getParam('sku');
         $qty = $this->request->getParam('qty');
 
@@ -96,15 +173,62 @@ class Username implements ActionInterface
                 throw new \Exception('no such quantity of product');
             }
 
-            $quote->addProduct($product,$qty);
-            $quote->save();
-            $this->eventManager->dispatch(
-                'amasty_username_product_add',
-                ['sku' => $sku]
+            $blacklistCollection = $this->blacklistCollectionFactory->create();
+            $blacklistCollection->addFieldToFilter('sku', ['eq'=> $sku]);
+            $blacklistSku = '';
+
+
+            foreach ($blacklistCollection as $item){
+
+                $blacklistSku = $item->getSku();
+
+            }
+
+
+
+            $blacklist = $this->blacklistFactory->create();
+            $this->blacklistResource->load(
+                $blacklist,
+                $sku,
+                'sku'
             );
-            //die('product added to cart');
-            $resultRedirect = $this->resultRedirectFactory->create();
-            return $resultRedirect->setPath('*/');
+
+
+            $blacklistQty = (int)$blacklist->getQty();
+            $cartQty = (int) $this->checkQtyQuote($sku);
+
+            $sumQty = $qty + $cartQty;
+
+
+            if ($blacklistSku !== $sku){
+                $quote->addProduct($product,$qty);
+                $quote->save();
+               $this->messageManager->addSuccessMessage("added $qty  products");
+                $resultRedirect = $this->resultRedirectFactory->create();
+                return $resultRedirect->setPath('*/');
+
+            }else{
+
+                if ($sumQty > $blacklistQty){
+                    $addQuantity = $blacklistQty - $cartQty;
+                    $quote->addProduct($product,$addQuantity);
+                    $quote->save();
+                    $this->messageManager->addSuccessMessage("added $addQuantity  products");
+                    $resultRedirect = $this->resultRedirectFactory->create();
+                    return $resultRedirect->setPath('*/');
+                }else{
+                    $quote->addProduct($product,$qty);
+                    $quote->save();
+                    $this->messageManager->addSuccessMessage("added $qty  products");
+                    $resultRedirect = $this->resultRedirectFactory->create();
+                    return $resultRedirect->setPath('*/');
+                }
+
+
+
+            }
+
+
 
 
         }catch (\Exception $e){

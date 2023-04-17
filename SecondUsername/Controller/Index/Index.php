@@ -26,7 +26,7 @@ Class Index extends FirstIndex{
 
 
     public function execute(){
-        
+
         if(!$this->session->isLoggedIn()) {
             die('you must be registered');
         }
