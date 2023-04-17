@@ -1,0 +1,36 @@
+<?php
+/**
+ * @var Amasty\Username\Block\Form $block
+ */
+?>
+<form method="post" action="<?= $block->getFormAction() ?>" data-mage-init='{"validation":{"rules": {"sku": {"required":true}}}}'>
+    <div data-bind="scope: 'coolAutocomplete'">
+        <!-- ko template: getTemplate() --><!-- /ko -->
+    </div>
+    <?php if ($block->showQty()): ?>
+    <div>
+        <label>qty:</label>
+        <input type="number" name="qty" value="<?= $block->getQty() ?>" data-validate='{"required":true, "min":1}'>
+
+    </div>
+    <?php endif; ?>
+    <?= $block->getChildHtml("Amasty_USERNAME.timer")  ?>
+    <button type="submit">Отправить</button>
+</form>
+
+
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Magento_Ui/js/core/app": {
+                "components": {
+                    "coolAutocomplete": {
+                        "component": "Amasty_UserName/js/koAutocomplete",
+                        "template": "Amasty_UserName/koAutocomplete"
+                    }
+                }
+            }
+        }
+    }
+</script>
