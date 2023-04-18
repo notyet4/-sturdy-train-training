@@ -1,0 +1,18 @@
+<!--@subject Amasty Username Blacklist @-->
+<!--@vars
+{
+"var qty":"Blacklist qty",
+"var sku":"Blacklist sku",
+
+}
+@-->
+
+
+{{template config_path="design/email/header_template"}}
+
+
+<p>{{trans "Item with" sku=$sku qty=$qty}}</p>
+
+
+
+{{template config_path="design/email/footer_template"}}
